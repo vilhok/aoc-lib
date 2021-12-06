@@ -1,7 +1,7 @@
 # A helper library for Advent of code
 ![java17](https://img.shields.io/badge/java-17+-blue)
 
-A helper library for minimizing the amount of work needed to participate in [https://adventofcode.com](ttps://adventofcode.com)
+A helper library for minimizing the amount of work needed to participate in [https://adventofcode.com](https://adventofcode.com)
 
 ### Features
 
