@@ -182,7 +182,7 @@ protected void insertTestsPart1(List<Test> tests) { }
 protected void insertTestsPart2(List<Test> tests) { }
 ```
 
-These can be used to insert test cases for each part of the puzzle. The solver calls this method first to get the tests, and then calls your solving function with those values. With this you can be sure that the task is correct. The actual input will be used as soon as your tests pass. Example implementation for 2015 day 1:
+These can be used to insert test cases for each part of the puzzle. These have to be manually extracted from the web page. The solver calls these methods first to get the tests, and then calls your solving function with those values. The actual input will be used as soon as the tests pass. A partial example implementation for 2015 day 1:
 
 ```java
 protected void insertTestsPart1(List<Test> tests) {
@@ -197,4 +197,4 @@ protected void insertTestsPart2(List<Test> tests) {
 	tests.add(new Test("()())", 5));
 }
 ```
-Class `Test` requires the test input to be inserted as a single string. Since java 17 you may use multiline strings, i.e. [text blocks](https://docs.oracle.com/en/java/javase/17/text-blocks/index.html)
+Class `Test` requires the test input to be inserted as a single string. Since java 17 you may use multiline strings, i.e. [text blocks](https://docs.oracle.com/en/java/javase/17/text-blocks/index.html).

@@ -83,10 +83,9 @@ public class DayGenerator {
 			dayStr = "0" + dayStr;
 		}
 		String cname = "Year" + year + "Day" + dayStr;
-		System.out.println(cname);
-		System.out.println(dayStr);
+
 		String s = String.format(dayTemplate, year, year, dayStr);
-		System.out.println(s);
+
 		File target = Paths.get("src", "solutions", dir, cname + ".java").toFile();
 		if (target.exists()) {
 			System.err.println("Did not generate file" + target.getAbsolutePath());
