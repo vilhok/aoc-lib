@@ -1,0 +1,4 @@
+bin/
+cookie.txt
+target/
+*.db
