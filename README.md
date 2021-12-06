@@ -1,4 +1,5 @@
 # A helper library for Advent of code
+![java17](https://img.shields.io/badge/java-17+-blue)
 
 A helper library for minimizing the amount of work needed to participate in [https://adventofcode.com](ttps://adventofcode.com)
 
@@ -196,3 +197,4 @@ protected void insertTestsPart2(List<Test> tests) {
 	tests.add(new Test("()())", 5));
 }
 ```
+Class `Test` requires the test input to be inserted as a single string. Since java 17 you may use multiline strings, i.e. [text blocks](https://docs.oracle.com/en/java/javase/17/text-blocks/index.html)
