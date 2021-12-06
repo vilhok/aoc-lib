@@ -43,13 +43,14 @@ public class Solver {
 
 	private static final String SOLVE = "solve";
 	private static final String BENCHMARK = "benchmark";
-	private static final String CACHE = "cache";
+	private static final String TOOLS = "tools";
 
 	private DayProvider dayprovider;
 
 	Namespace parsedArgs;
 
 	public Solver(String[] args) {
+		DBManager.nonNullCheck();
 		this.dayprovider = new ReflectiveDayProvider();
 		if (args.length == 0) {
 			parseArgs(new String[] { "-h" });
@@ -60,17 +61,18 @@ public class Solver {
 
 	private void parseArgs(String[] args) {
 		ArgumentParser parser = ArgumentParsers.newFor("").build()//
-				.description("Java library for Advent of code https://adventofcode.com/"
-						+ "\n\n"+"*".repeat(50)+"\nIf this is the first time, add a user: \n\nuser -a [username] -c [cookie]\n\n"
+				.description("Java library for Advent of code https://adventofcode.com/" + "\n\n" + "*".repeat(50)
+						+ "\nIf this is the first time, add a user: \n\nuser -a [username] -c [cookie]\n\n"
 						+ " The username is LOCAL username and has nothing to do with AoC login. You must first log in with a browser and pick the cookie. "
 						+ "\n\nAfter you have stored a user, run:\n\n" + "solve -u [user] -d [day] -y [year]\n\n"
-						+ "*".repeat(50)+"\n\nFor further info, run any of subcommand with argument -h");
+						+ "*".repeat(50) + "\n\nFor further info, run any of subcommand with argument -h");
 
 		Subparsers subs = parser.addSubparsers().dest("mode");
 		Subparser solver = subs.addParser(SOLVE)//
 				.description("Solver mode is used to solve a puzzle for specific day.");
 		solver.defaultHelp(true);
-		subs.help("run [mode] -h for more information").description("Pick one of the following modes to run for different functionalities").title("modes");
+		subs.help("run [mode] -h for more information")
+				.description("Pick one of the following modes to run for different functionalities").title("modes");
 
 		ArgumentGroup puzzleSolve = solver.addArgumentGroup("puzzle selectors");
 		puzzleSolve.addArgument("-u", "--user")
@@ -125,12 +127,11 @@ public class Solver {
 
 		mg.addArgument("-g", "--generate-year").type(Integer.class).metavar("YEAR")
 				.help("Automatically generate the solver files for a specific year.");
-		mg.addArgument("--fix-solution").nargs(5).metavar("[user]","[day]", "[year]", "[part]","[solution]").help(
+		mg.addArgument("--fix-solution").nargs(5).metavar("[user]", "[day]", "[year]", "[part]", "[solution]").help(
 				"Insert a correct solution to the database manually, for example if you have solved it on another computer. ");
 
-		mg.addArgument("--delete-solution").nargs(4).metavar("[user]","[day]", "[year]", "[part]").help(
+		mg.addArgument("--delete-solution").nargs(4).metavar("[user]", "[day]", "[year]", "[part]").help(
 				"If, for whatever reason, your database contains an invalid correct solution that should not be there, you may use this to delete it. This results in an error later, as your code tries to re-submit the solution. This is automatically fixed by fetching the correct solution from the AoC. You may alternatively use --fix-solution.");
-		
 
 //		mg.addArgument("--rebuild-cache").action(Arguments.storeTrue()).help(
 //				"rebuilds the whole solution and answer cache. Please never do this, keep your database with you even if you switch computers. This takes a long time, it sends a requests to AoC website every 5 seconds not to put enormous load on the servers. As stated by AoC devs, you might get banned by misusing the page. I don't take any responsibility.");
@@ -468,7 +469,7 @@ public class Solver {
 		System.out.println("*".repeat(size));
 	}
 
-	private void doCache() {
+	private void doTools() {
 		System.out.println(parsedArgs);
 		String arg = parsedArgs.getString("generate_year");
 		if (arg != null) {
@@ -488,11 +489,11 @@ public class Solver {
 
 	public void run() {
 		String mode = parsedArgs.get("mode");
-
+		System.out.println(mode);
 		switch (mode) {
 		case SOLVE -> doSolve();
 		case BENCHMARK -> doBenchmark();
-		case CACHE -> doCache();
+		case TOOLS -> doTools();
 		}
 	}
 

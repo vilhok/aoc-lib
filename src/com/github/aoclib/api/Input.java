@@ -55,10 +55,12 @@ public class Input {
 			return List.of(s.split("\n"));
 		} catch (SQLException | IOException e) {
 			System.err.println("Input file was not available:");
+			System.err.println("Make sure user"+username+" exists and has cookie set.");
+			System.err.println("rung with args: user -h for help");
 			e.printStackTrace();
-		}
+			return List.of("Input was not available.", e.getMessage());
 
-		return List.of();
+		}
 	}
 
 	/**

@@ -21,8 +21,7 @@ public abstract class DayX {
 	 *
 	 */
 	public record Test(String testInput, Object expectedSolution) {
-		
-	
+
 	}
 
 	/**
@@ -66,18 +65,18 @@ public abstract class DayX {
 
 	public Solution solveFirstPart() {
 		long time = System.nanoTime();
-		String solution = firstPart(input).toString();
+		Object s = firstPart(input);
 		long runtime = System.nanoTime() - time;
+		String solution = s == null ? "null" : s.toString();
 		return new Solution(p.getYear(), p.getDay(), Part.FIRST, solution, runtime);
-
 	}
 
 	public Solution solveSecondPart() {
 		long time = System.nanoTime();
-		String solution = secondPart(input).toString();
+		Object s = secondPart(input);
 		long runtime = System.nanoTime() - time;
+		String solution = s == null ? "null" : s.toString();
 		return new Solution(p.getYear(), p.getDay(), Part.SECOND, solution, runtime);
-
 	}
 
 	public void setup(Parameters p, InputParser input) {
@@ -114,23 +113,23 @@ public abstract class DayX {
 	private boolean performTests(List<Test> tests, Function<InputParser, Object> test) {
 		int notSolvedCnt = 0;
 		int index = 0;
-		boolean allPassed=true;
+		boolean allPassed = true;
 		for (Test tc : tests) {
 			InputParser ip = new InputParser(tc.testInput);
 			TestSolution result = new TestSolution(test.apply(ip).toString());
 			if (result.solution.equals(NOT_SOLVED)) {
 				notSolvedCnt++;
 			} else if (!result.solution.equals(tc.expectedSolution.toString())) {
-				System.out.println("Test " + (index+1)+ " failed. Result: " + result.solution + " Expected: "
+				System.out.println("Test " + (index + 1) + " failed. Result: " + result.solution + " Expected: "
 						+ tc.expectedSolution);
-				allPassed=false;
+				allPassed = false;
 			}
 			index++;
 		}
-		if(!allPassed) {
+		if (!allPassed) {
 			return allPassed;
 		}
-		
+
 		if (notSolvedCnt > 0) {
 			System.err.println(">>Warning: " + notSolvedCnt + "/" + tests.size() + " tests returned NOT_SOLVED");
 			System.err.println(">>As the main input likely returns NOT_SOLVED, this counts as tests being passed.");

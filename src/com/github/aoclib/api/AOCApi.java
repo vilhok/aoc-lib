@@ -209,8 +209,7 @@ public final class AOCApi extends Api {
 		} catch (SQLException e1) {
 			throw new IOException(e1);
 		} catch (NoSuchElementException e2) {
-			System.err.println("User " + username + " not found from database.");
-			return "";
+			throw new IOException("User " + username + " not found from database.");
 		}
 		System.out.println(String.format(inputURL, year, day));
 		HttpRequest request = getRequest(String.format(inputURL, year, day), cookie);
