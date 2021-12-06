@@ -22,7 +22,7 @@ A helper library for minimizing the amount of work needed to participate in [htt
 
 ## Getting started
 
-For quick start, just use this code and run it and follow the top section of the printed help.
+For quick start, download this library and add it to your classpath. Then just use the following code. Run it and follow the top section of the printed help.
 
 ```java
 package mypackage;
@@ -49,7 +49,7 @@ Then add a user:
 
 `java MyClass user --add myName --cookie session=0123456789...adcdef`
 
-The `myName` is just a local username and is not used to interact with advent of code. While technically multiple usernames and different cookies could be added, there are very few reasons to do so. It's not considered appropriate to solve puzzles for multiple users at the same time. Such feature does not exist in this program, nor it should be ever created.
+The `myName` is just a local username and is not used to interact with advent of code. While technically multiple usernames and different cookies could be added, there are very few reasons to do so. It's not considered appropriate to solve puzzles for multiple accounts at the same time. Such feature does not exist in this program, nor should it ever be created.
 
 
 ### Creating a solver
@@ -62,8 +62,10 @@ To get all default solver boilerplate for a specific year, run:
 #### Alternative: the manual way
 Extend class `DayX` with a specific name and implement the methods.
 
-The file should be name in the following way. The dot-notation means the java package path:
+The file should be named in the following way;
 `solution.yearYYYY.YearYYYYDayDD.java`
+
+Here, `solution.yearYYYY` means the java package, and there should be a file called `YearYYYYDayDD.java`.
 
 For example:
 `solution.year2021.Year2021Day06.java`
@@ -71,7 +73,7 @@ For example:
 If you want to store the solvers in some other path, you may setup it like this (before calling `run()` from the solver):
 
 ```java
-ReflectiveDayProvider.setRoot("my.path.to.files.year%d");
+ReflectiveDayProvider.setRoot("the.javapacakge.to.files.whatever%d");
 ```
 
 This path must have a single `%d` which will be replaced by the `--year` argument that is given when solving a specific day.
@@ -80,9 +82,9 @@ This path must have a single `%d` which will be replaced by the `--year` argumen
 
 Run `java MyClass solve -u myName -y 2021 -d 6`
 
-If the AoC is in progress, note that the year defaults to current year (in December) and previous year otherwise. The day defaults to current day (UTC-5). If you are solving the puzzles on the day they unlock, you can just run:
+Note: if the AoC is in progress, the year defaults to current year (i.e. in December). Otherwise year defaults to previous year. The day defaults to current day (UTC-5). If you are solving the puzzles on the day they unlock, you can just run:
 
-Run `java MyClass solve -u myName`
+`java MyClass solve -u myName`
 
 
 ### Change the database location
@@ -127,10 +129,10 @@ To actually solve the puzzle, complete the following methods:
 
 ```java
 public Object firstPart(InputParser input){
-return NOT_SOLVED;
+  return NOT_SOLVED;
 }
 public Object secondPart(InputParser input){
-return NOT_SOLVED;
+  return NOT_SOLVED;
 }
 ```
 
@@ -141,7 +143,7 @@ Some of the aforementioned invalid values include: ` true, false, 0,-1, null, ""
 
 ### Input parser examples
 
-`InputParser` contains the input as a `List<String>` and has several methods to get that in a suitable format, such as spliting the lines by a `Delimiter` or by a custom (regex) and converting each value to any format.
+`InputParser` contains the input as a `List<String>` and has several methods to get that in a suitable format, such as spliting the lines by a `Delimiter` or by a custom string (regex) and converting each value to any format.
 
 Some examples:
 
@@ -158,7 +160,7 @@ int[] myInts = input.asSingleIntArray();
 int[] myInts2 = input.asSingleIntArray(Delimiter.COMMA); 
 
 // each line of delimited integers as a separate list:
-List<List<Integer>> rows = input.linesAsLists(Delimiter.COMMA,Integer::parseInt);
+List<List<Integer>> rows = input.linesAsLists(Delimiter.COMMA, Integer::parseInt);
 
 // each group of lines as separate lists.
 // Groups of lines are separated by two newlines. 
@@ -169,4 +171,28 @@ char[][] myTable = input.charMatrix();
 ```
 See the `InputParser` documentation for the full list of functions.
 
+### Adding test cases
 
+The class `DayX` has two additional methods that you can override:
+
+```java
+protected void insertTestsPart1(List<Test> tests) { }
+
+protected void insertTestsPart2(List<Test> tests) { }
+```
+
+These can be used to insert test cases for each part of the puzzle. The solver calls this method first to get the tests, and then calls your solving function with those values. With this you can be sure that the task is correct. The actual input will be used as soon as your tests pass. Example implementation for 2015 day 1:
+
+```java
+protected void insertTestsPart1(List<Test> tests) {
+	tests.add(new Test("(())", 0));
+	tests.add(new Test("(()(()(", 3));
+	tests.add(new Test("))(", -1));
+	tests.add(new Test(")())())", -3));
+}
+
+protected void insertTestsPart2(List<Test> tests) {
+	tests.add(new Test(")", 1));
+	tests.add(new Test("()())", 5));
+}
+```
