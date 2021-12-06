@@ -32,7 +32,7 @@ import com.github.aoclib.solver.Solver;
 
 public class MyClass {
 	public static void main(String[] args){
-		DBManager.setPath("aoc.db");
+		DBManager.defaultDB();
 		new Solver(args).run();
 	}
 }
