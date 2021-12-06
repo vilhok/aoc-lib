@@ -20,7 +20,9 @@ public abstract class DayX {
 	 * Represents a single test case with an input and expected solution
 	 *
 	 */
-	protected record Test(String testInput, String expectedSolution) {
+	public record Test(String testInput, Object expectedSolution) {
+		
+	
 	}
 
 	/**
@@ -93,7 +95,7 @@ public abstract class DayX {
 	public boolean testFirstPart(int[] skiptests) {
 		ArrayList<Test> tests = new ArrayList<>();
 		insertTestsPart1(tests);
-		return performTests(tests, this::secondPart);
+		return performTests(tests, this::firstPart);
 	}
 
 	/**
@@ -118,8 +120,8 @@ public abstract class DayX {
 			TestSolution result = new TestSolution(test.apply(ip).toString());
 			if (result.solution.equals(NOT_SOLVED)) {
 				notSolvedCnt++;
-			} else if (!result.solution.equals(tc.expectedSolution)) {
-				System.out.println("Test in index " + index + "failed. Result: " + result.solution + "Expected:"
+			} else if (!result.solution.equals(tc.expectedSolution.toString())) {
+				System.out.println("Test " + (index+1)+ " failed. Result: " + result.solution + " Expected: "
 						+ tc.expectedSolution);
 				allPassed=false;
 			}
@@ -130,9 +132,9 @@ public abstract class DayX {
 		}
 		
 		if (notSolvedCnt > 0) {
-			System.out.println("Warning: " + notSolvedCnt + "/" + tests.size() + " tests returned NOT_SOLVED");
-			System.out.println("As the main input likely returns NOT_SOLVED, this counts as tests begin passed.");
-			System.out.println("Proceeding to attempt with main input...");
+			System.err.println(">>Warning: " + notSolvedCnt + "/" + tests.size() + " tests returned NOT_SOLVED");
+			System.err.println(">>As the main input likely returns NOT_SOLVED, this counts as tests being passed.");
+			System.err.println(">>Proceeding to attempt with main input...\n");
 		}
 
 		return true;

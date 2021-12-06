@@ -80,7 +80,7 @@ public class Input {
 	 */
 	public InputParser parser() {
 		if (cache == null) {
-			loadLines();
+			cache = loadLines();
 		}
 		return new InputParser(cache);
 	}
