@@ -222,6 +222,7 @@ public class Solver {
 		} else {
 			s.firstPart = solvePart(username, //
 					options, //
+					daySolver, //
 					daySolver::testFirstPart, //
 					daySolver::solveFirstPart, oldData.firstSolution.solution);
 			if (s.firstPart.correct) {
@@ -235,6 +236,7 @@ public class Solver {
 			} else {
 				s.secondPart = solvePart(username, //
 						options, //
+						daySolver, //
 						daySolver::testSecondPart, //
 						daySolver::solveSecondPart, oldData.secondSolution.solution);
 
@@ -243,7 +245,7 @@ public class Solver {
 		return s;
 	}
 
-	private PartSolveData solvePart(String username, Options options, Function<int[], Boolean> tests,
+	private PartSolveData solvePart(String username, Options options, DayX ctx, Function<int[], Boolean> tests,
 			Supplier<Solution> solver, String knownCorrect) throws SQLException, IOException {
 		PartSolveData psd = new PartSolveData();
 
@@ -252,6 +254,9 @@ public class Solver {
 			boolean testsPassed = tests.apply(options.testsToSkip);
 			if (!testsPassed) {
 				psd.statusMsg = "Tests failed.";
+				return psd;
+			} else if (ctx.onlyTest()) {
+				psd.statusMsg = "Tests passed, but ONLY_TEST was set true. Wont run with the main input.";
 				return psd;
 			}
 		}
@@ -279,7 +284,7 @@ public class Solver {
 			}
 		} else {
 			if (solution.isNull()) {
-				psd.statusMsg = "Solution is null or null-like: " + solution.solution+"\nRefusing to submit.";
+				psd.statusMsg = "Solution is null or null-like: " + solution.solution + "\nRefusing to submit.";
 			} else if (!options.noSubmit) {
 				AOCVerify ao = verifyResultAtAOC(username, solution);
 				psd.correct = ao.result == Result.CORRECT;

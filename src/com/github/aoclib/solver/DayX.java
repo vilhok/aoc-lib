@@ -13,6 +13,12 @@ public abstract class DayX {
 
 	public static final String NOT_SOLVED = "NOT_SOLVED";
 
+	/**
+	 * Set this to true from the subclass, if you only want to run tests even if
+	 * they succeed.
+	 */
+	protected boolean ONLY_TEST = false;
+
 	private InputParser input;
 	private Parameters p;
 
@@ -139,9 +145,15 @@ public abstract class DayX {
 		if (notSolvedCnt > 0) {
 			System.err.println(">>Warning: " + notSolvedCnt + "/" + tests.size() + " tests returned NOT_SOLVED");
 			System.err.println(">>As the main input likely returns NOT_SOLVED, this counts as tests being passed.");
+			System.err.println(">>Disable this behavior with ONLY_TEST=true; in your solver.");
 			System.err.println(">>Proceeding to attempt with main input...\n");
+			
 		}
 
 		return true;
+	}
+
+	public boolean onlyTest() {
+		return ONLY_TEST;
 	}
 }
