@@ -37,7 +37,6 @@ public class InputParser {
 		return true;
 	}
 
-	
 	public InputParser(String inputString) {
 		this.input = new ArrayList<>(Arrays.asList(inputString.split("\n")));
 
@@ -106,6 +105,10 @@ public class InputParser {
 				current.add(line);
 			}
 		}
+		//adds the final group if there was no blank line as the last line
+		if (list.get(list.size() - 1) != current) {
+			list.add(current);
+		}
 		return list;
 	}
 
@@ -171,7 +174,6 @@ public class InputParser {
 				.mapToLong(e -> Long.parseLong(e)) //
 				.toArray();
 	}
-
 
 	/**
 	 * Returns each split line as a list of items of type T. Requires a custom
