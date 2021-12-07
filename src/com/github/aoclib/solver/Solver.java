@@ -493,7 +493,6 @@ public class Solver {
 
 	public void run() {
 		String mode = parsedArgs.get("mode");
-		System.out.println(mode);
 		switch (mode) {
 		case SOLVE -> doSolve();
 		case BENCHMARK -> doBenchmark();
