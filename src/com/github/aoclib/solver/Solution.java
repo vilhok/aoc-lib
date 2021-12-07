@@ -37,8 +37,8 @@ public sealed class Solution permits TestSolution {
 		}
 	}
 
-	public boolean notNull() {
-		return this != NULL_SOLUTION && !badSolutions.contains(solution);
+	public boolean isNull() {
+		return solution == NULL_SOLUTION.solution || badSolutions.contains(solution);
 
 	}
 

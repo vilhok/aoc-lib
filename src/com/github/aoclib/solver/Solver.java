@@ -108,7 +108,7 @@ public class Solver {
 
 		Subparser benchmark = subs.addParser(BENCHMARK);
 
-		benchmark.addArgument("-u", "--user")
+		benchmark.addArgument("-u", "--user").required(true)
 				.help("Local username. Database must have a cookie with this name. For help, run: user -h");
 
 		int benchYear;
@@ -198,6 +198,7 @@ public class Solver {
 		ResultData s = new ResultData();
 		SolutionData oldData = DBManager.getSolution(year, day, username);
 
+		System.out.println(oldData.firstSolved());
 		if (options.skipSolved && oldData.bothSolved()) {
 			System.out.println(day + "/" + year + " solved already. skipping..");
 			return s;
@@ -267,8 +268,7 @@ public class Solver {
 			psd.statusMsg = "This solution is known to be wrong.";
 			return psd;
 		}
-
-		if (knownCorrect != null && solution.notNull()) {
+		if (knownCorrect != null) {
 			if (knownCorrect.equals(solution.solution)) {
 
 				psd.correct = true;
@@ -278,9 +278,10 @@ public class Solver {
 						+ solution.solution;
 			}
 		} else {
-
-			if (!options.noSubmit) {
-				AOCVerify ao = verityResultAtAOC(username, solution);
+			if (solution.isNull()) {
+				psd.statusMsg = "Solution is null or null-like: " + solution.solution+"\nRefusing to submit.";
+			} else if (!options.noSubmit) {
+				AOCVerify ao = verifyResultAtAOC(username, solution);
 				psd.correct = ao.result == Result.CORRECT;
 				psd.statusMsg = ao.msg;
 
@@ -329,7 +330,7 @@ public class Solver {
 	 * @throws SQLException
 	 * @throws IOException
 	 */
-	private AOCVerify verityResultAtAOC(String username, Solution usersolution) throws SQLException, IOException {
+	private AOCVerify verifyResultAtAOC(String username, Solution usersolution) throws SQLException, IOException {
 		SubmitStatus s = Api.API.offerSolution(username, usersolution);
 
 		switch (s) {
@@ -344,7 +345,9 @@ public class Solver {
 
 		case ALREADY_SOLVED:
 			// TODO: fecth the solution from the task page and isert to database.
-			return AOCVerify.incorrect("Already submitted this!");
+			Api.API.fetchSolution(username, usersolution.year, usersolution.day);
+
+			return AOCVerify.correct("This was already submitted. Solution was acquired from the AOC page.");
 		case TOO_RECENT:
 			// TODO: attempt to parse the delay from the page, though it should already be
 			return AOCVerify.incorrect("Too recent answer!");

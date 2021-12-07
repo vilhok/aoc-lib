@@ -94,7 +94,8 @@ public class DBManager {
 		String solutionsql = "INSERT INTO solutions(user,year,day,part,solution) VALUES(?,?,?,?,?)";
 		String wrongsolution = "INSERT INTO wrongsolutions(user,year,day,part,solution) VALUES(?,?,?,?,?)";
 		String sql = correct ? solutionsql : wrongsolution;
-
+		//TODO: this does not throw error if the value already exists
+		
 		try (PreparedStatement ps = c.prepareStatement(sql)) {
 			ps.setString(1, user);
 			ps.setInt(2, s.year);

@@ -114,11 +114,11 @@ public final class AOCApi extends Api {
 		requests.add(requestFuture);
 		while (true) {
 			try {
-				System.out.println("Waiting for a reply..");
 				String response = requestFuture.get();
 				SubmitStatus ss = SubmitStatus.forResult(response);
 				if (ss == SubmitStatus.UNDEFINED) {
 					System.out.println(response);
+					System.out.println("Unreconized page. See above.");
 				}
 				return ss;
 			} catch (InterruptedException | ExecutionException e) {
@@ -170,7 +170,15 @@ public final class AOCApi extends Api {
 
 		AOCRequest item = new AOCRequest(request, aocfpage);
 		requests.add(item);
-		return null;
+
+		while (true) {
+			try {
+				String input = item.get();
+				return new AOCResponse(input);
+			} catch (InterruptedException | ExecutionException e) {
+				e.printStackTrace();
+			}
+		}
 //		while (true) {
 //			try {
 //				return null;
@@ -211,7 +219,7 @@ public final class AOCApi extends Api {
 		} catch (NoSuchElementException e2) {
 			throw new IOException("User " + username + " not found from database.");
 		}
-		System.out.println(String.format(inputURL, year, day));
+		System.out.println("Downloading input from " + String.format(inputURL, year, day));
 		HttpRequest request = getRequest(String.format(inputURL, year, day), cookie);
 
 		AOCRequest item = new AOCRequest(request, AOCRequestType.INPUT_FETCH);
@@ -248,70 +256,38 @@ public final class AOCApi extends Api {
 //	}
 
 	public void fetchPersonalStats(String username) throws IOException, InterruptedException, ExecutionException {
-		String cookie;
-		try {
-			cookie = DBManager.getCookie(username);
-		} catch (SQLException e1) {
-			throw new IOException(e1);
-		} catch (NoSuchElementException e2) {
-			System.err.println("User " + username + " not found from database.");
-			return;
-		}
-
-		for (int i = 2015; i <= 2015; i++) {
-			// if(DBManager.hasMissingSolutions()){
-			HttpRequest req = getRequest(String.format(personalStats, 2020), cookie);
-			AOCRequest item = new AOCRequest(req, AOCRequestType.INPUT_FETCH);
-			requests.add(item);
-			System.out.println("request added");
-			Thread.sleep(5000);
-			System.out.println("getting item");
-			String s = item.get();
-			System.out.println(s);
-			// }
-
-		}
+//		String cookie;
+//		try {
+//			cookie = DBManager.getCookie(username);
+//		} catch (SQLException e1) {
+//			throw new IOException(e1);
+//		} catch (NoSuchElementException e2) {
+//			System.err.println("User " + username + " not found from database.");
+//			return;
+//		}
+//
+//		for (int i = 2015; i <= 2015; i++) {
+//			// if(DBManager.hasMissingSolutions()){
+//			HttpRequest req = getRequest(String.format(personalStats, 2020), cookie);
+//			AOCRequest item = new AOCRequest(req, AOCRequestType.INPUT_FETCH);
+//			requests.add(item);
+//			System.out.println("request added");
+//			Thread.sleep(5000);
+//			System.out.println("getting item");
+//			String s = item.get();
+//			System.out.println(s);
+//			// }
+//
+//		}
 
 	}
 
-	/**
-	 * Parse response from the HTTP
-	 * 
-	 * @param rawHTTP
-	 * @return //
-	 */
-//	private static SubmitStatus parseResponse(AOCRequestType request, String rawHTTPresponse) {
-//		AOCResponse r = new AOCResponse(rawHTTPresponse);
-//
-//		if (request == AOCRequestType.FRONTPAGE_FETCH) {
-//			Matcher m = Pattern.compile("Your puzzle answer was <code>(.*)</code>\\.").matcher(rawHTTPresponse);
-//
-//			while (m.find()) {
-//				for (int j = 1; j <= m.groupCount(); j++) {
-//					System.out.println(m.group(j));
-//				}
-//				System.out.println("Done");
-//			}
-//			// TODO: push FP fetch to DB
-//
-//		} else if (request == AOCRequestType.SUBMIT) {
-//
-//			return SubmitStatus.forResult(rawHTTPresponse);
-//		}
-//		// TODO: push input fetch to do
-//
-//		// TODO: submit:
-//		/*
-//		 * parse result -> push time or parse long time ->
-//		 */
-//		return null;
-//	}
 
 	// ------------ Class AOCRequestType ------------
 
 	public enum AOCRequestType {
 		INPUT_FETCH("input fetch", 10000), //
-		TASKPAGE_FETCH("front page fetch", 1000), //
+		TASKPAGE_FETCH("task page fetch", 1000), //
 		EVENTPAGE_FETCH("event page fetch", 1000), //
 		SUBMIT("solution submit", 5000), //
 		PERSONAL_STATS("personal leaderboard", 5000);
@@ -375,9 +351,7 @@ public final class AOCApi extends Api {
 		public String get() throws InterruptedException, ExecutionException {
 			boolean waiting = true;
 			while (waiting) {
-				System.out.println("started waiting");
-				wait.await(); //
-				System.out.println("wait ended");
+				wait.await(); //TODO interrupted? This makes no sense
 				waiting = false;
 			}
 			return result;
@@ -419,7 +393,7 @@ public final class AOCApi extends Api {
 
 						long nextSeconToPrint = waitms / 1000;
 						if (nextSeconToPrint != lastPrintSeconds) {
-							System.out.println("Waiting ~" + nextSeconToPrint + " s before request..");
+							System.out.println("\tWaiting ~" + nextSeconToPrint + " s before request..");
 							lastPrintSeconds = nextSeconToPrint;
 						}
 						long waitTime = waitms > 250 ? 250 : waitms;
@@ -430,12 +404,8 @@ public final class AOCApi extends Api {
 					HttpResponse<String> response = httpClient.send(request.request,
 							HttpResponse.BodyHandlers.ofString());
 
-					System.out.println("Response received");
 					request.putBody(response.body());
 					request.putCode(response.statusCode());
-//					System.out.println(response.body());
-//					System.out.println(response.statusCode());
-//					System.out.println(response.headers());
 					long time;
 					if (request.type == AOCRequestType.SUBMIT) {
 						time = System.currentTimeMillis() + parseTime(request.type, response.body());
@@ -456,6 +426,7 @@ public final class AOCApi extends Api {
 			}
 		}
 
+		//TODO: fix
 		private long parseTime(AOCRequestType type, String body) {
 			Matcher m = Pattern.compile(timeRegex).matcher(body);
 			if (m.find()) {
@@ -487,4 +458,25 @@ public final class AOCApi extends Api {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public void fetchSolution(String username, int year, int day) throws IOException, SQLException {
+		AOCResponse taskPage = checkTaskPage(username, year, day);
+		String regex = "<p>Your puzzle answer was <code>(.*)</code>";
+		Pattern p = Pattern.compile(regex);
+		Matcher s = p.matcher(taskPage.raw());
+		s.matches();
+		
+		Part[] parts = { Part.FIRST, Part.SECOND };
+
+		for (Part pa : parts) {
+			if (s.find()) {
+				String group = s.group(1);
+				System.out.println("Existing answer fetched from AOC-page: " + group);
+				DBManager.insertSolution(username, new Solution(year, day, pa, group, -1), true);
+			}
+		}
+
+	}
+
 }

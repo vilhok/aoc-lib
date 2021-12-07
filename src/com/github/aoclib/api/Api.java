@@ -61,4 +61,6 @@ public abstract class Api {
 	 */
 	public abstract String downloadInput(String username, int year, int day) throws IOException, SQLException;
 
+	public abstract void fetchSolution(String username, int year, int day) throws IOException, SQLException;
+
 }
