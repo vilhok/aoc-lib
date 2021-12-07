@@ -12,7 +12,7 @@ public sealed class Solution permits TestSolution {
 	 * These are not considered valid solutions are are never submitted, nor saved
 	 * in the database.
 	 */
-	private static final Set<String> badSolutions = Set.of("0", "-1", "false", "true", "");
+	private static final Set<String> badSolutions = Set.of("0", "-1", "false", "true", "null","");
 
 	/**
 	 * A solution that does not exist.
@@ -38,7 +38,7 @@ public sealed class Solution permits TestSolution {
 	}
 
 	public boolean isNull() {
-		return solution == NULL_SOLUTION.solution || badSolutions.contains(solution);
+		return solution == null || solution == NULL_SOLUTION.solution || badSolutions.contains(solution) ;
 
 	}
 
