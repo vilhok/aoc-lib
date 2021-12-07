@@ -47,7 +47,7 @@ public class Input {
 			Optional<String> in = DBManager.getInput(username, year, day);
 			String s;
 			if (!in.isPresent()) {
-				System.out.println("Querying input from AOC-website:" + username + " " + year + " " + day);
+				System.out.println("No locally cached input found. Puzzle: " +day+"/"+year+" user:"+username);
 				s = AOCApi.API.downloadInput(username, year, day);
 			} else {
 				s = in.get();

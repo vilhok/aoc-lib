@@ -94,6 +94,8 @@ public abstract class DayX {
 	public boolean testFirstPart(int[] skiptests) {
 		ArrayList<Test> tests = new ArrayList<>();
 		insertTestsPart1(tests);
+		if (tests.size() > 0)
+			System.out.println("Testing part 1:");
 		return performTests(tests, this::firstPart);
 	}
 
@@ -107,6 +109,8 @@ public abstract class DayX {
 	public boolean testSecondPart(int[] skiptests) {
 		ArrayList<Test> tests = new ArrayList<>();
 		insertTestsPart2(tests);
+		if (tests.size() > 0)
+			System.out.println("Testing part 2:");
 		return performTests(tests, this::secondPart);
 	}
 
@@ -120,9 +124,11 @@ public abstract class DayX {
 			if (result.solution.equals(NOT_SOLVED)) {
 				notSolvedCnt++;
 			} else if (!result.solution.equals(tc.expectedSolution.toString())) {
-				System.out.println("Test " + (index + 1) + " failed. Result: " + result.solution + " Expected: "
+				System.out.println("\tTest " + (index + 1) + " failed. Result: " + result.solution + " Expected: "
 						+ tc.expectedSolution);
 				allPassed = false;
+			} else {
+				System.out.println("\tTest " + (index + 1) + " passed.");
 			}
 			index++;
 		}
