@@ -198,7 +198,6 @@ public class Solver {
 		ResultData s = new ResultData();
 		SolutionData oldData = DBManager.getSolution(year, day, username);
 
-		System.out.println(oldData.firstSolved());
 		if (options.skipSolved && oldData.bothSolved()) {
 			System.out.println(day + "/" + year + " solved already. skipping..");
 			return s;
@@ -349,7 +348,6 @@ public class Solver {
 						.correct(usersolution.day + "/" + usersolution.year + " Part 2 Correct! You have 2 stars: **");
 
 		case ALREADY_SOLVED:
-			// TODO: fecth the solution from the task page and isert to database.
 			Api.API.fetchSolution(username, usersolution.year, usersolution.day);
 
 			return AOCVerify.correct("This was already submitted. Solution was acquired from the AOC page.");
@@ -398,7 +396,6 @@ public class Solver {
 		int day = parsedArgs.getInt("day");
 		System.out.println("Solving " + day + "/" + year + " for user " + uname);
 		Options o = new Options();
-//		o.skipFirstIfDone = true;
 		o.preLoadInput = true;
 		try {
 			ResultData stats = solve(uname, year, day, o);
@@ -438,17 +435,19 @@ public class Solver {
 		long totalTime = 0;
 		int unsolved = 0;
 		Options o = new Options();
-		o.noSubmit = true; // TODO: this is not honored!
-
+		o.noSubmit = true;
+		o.runTests = false;
 		for (int i = 1; i <= 25; i++) {
 			try {
 				SolutionData sd = DBManager.getSolution(year, i, uname);
 				if (sd.bothSolved()) {
-					ResultData stats = solve(uname, year, i, new Options());
+					ResultData stats = solve(uname, year, i, o);
 					if (stats.firstPart.solution != null) {
 						long firstTime = stats.firstPart.solution.solutiontimeNS;
 						System.out.print(i + "/" + year + ": Part1 " + TimeUtils.getTimeString(firstTime));
 						totalTime += firstTime;
+						// TODO: if part1 fails for whatever reason, obviously part2 was not executed.
+						// TODO: make sure to report failed benchmarks
 						if (stats.secondPart.solution != null) {
 							long secondTime = stats.secondPart.solution.solutiontimeNS;
 							System.out.println(", Part2 " + TimeUtils.getTimeString(secondTime));
@@ -461,7 +460,6 @@ public class Solver {
 					unsolved++;
 				}
 			} catch (SQLException | IOException | InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -485,10 +483,8 @@ public class Solver {
 				try {
 					DayGenerator.generate(Integer.parseInt(arg), i);
 				} catch (NumberFormatException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}

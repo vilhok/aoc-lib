@@ -1,19 +1,14 @@
 package com.github.aoclib.db;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import com.github.aoclib.api.AOCApi.AOCRequestType;
 import com.github.aoclib.solver.Part;
@@ -35,7 +30,7 @@ public class DBManager {
 				for (String s : CreateStatements.createstatements) {
 					ps.addBatch(s);
 				}
-				int[] r = ps.executeBatch();
+				ps.executeBatch();
 			} catch (SQLException e) {
 				e.printStackTrace();
 
@@ -94,7 +89,7 @@ public class DBManager {
 		String solutionsql = "INSERT INTO solutions(user,year,day,part,solution) VALUES(?,?,?,?,?)";
 		String wrongsolution = "INSERT INTO wrongsolutions(user,year,day,part,solution) VALUES(?,?,?,?,?)";
 		String sql = correct ? solutionsql : wrongsolution;
-		//TODO: this does not throw error if the value already exists
+		//TODO: this does not throw error if the value already exists, why?
 		
 		try (PreparedStatement ps = c.prepareStatement(sql)) {
 			ps.setString(1, user);
