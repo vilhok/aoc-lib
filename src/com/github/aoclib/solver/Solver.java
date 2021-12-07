@@ -44,6 +44,7 @@ public class Solver {
 	private static final String SOLVE = "solve";
 	private static final String BENCHMARK = "benchmark";
 	private static final String TOOLS = "tools";
+	private static final String USER = "user";
 
 	private DayProvider dayprovider;
 
@@ -122,7 +123,7 @@ public class Solver {
 				.help("Defaults to current year on December, and previous year before December.").type(Integer.class)
 				.setDefault(0);
 
-		Subparser cache = subs.addParser("tools");
+		Subparser cache = subs.addParser(TOOLS);
 		MutuallyExclusiveGroup mg = cache.addMutuallyExclusiveGroup("Cache tools and code generation");
 
 		mg.addArgument("-g", "--generate-year").type(Integer.class).metavar("YEAR")
@@ -138,11 +139,17 @@ public class Solver {
 
 		mg.required(true);
 
-		Subparser user = subs.addParser("user");
+		Subparser user = subs.addParser(USER);
 
-		user.addArgument("-a", "--add").help(
+		MutuallyExclusiveGroup mulg = user.addMutuallyExclusiveGroup();
+		mulg.addArgument("-a", "--add").help(
 				"Adds a local username. This can be anything you want. Under normal circumstances, you only ever add a single user.");
+
 		user.addArgument("-c", "--cookie").help("The cookie to be stored in the local database");
+
+		mulg.addArgument("--cookie-info").action(Arguments.storeTrue())
+				.help("Pass this option to print the cookie to console. Requires -u");
+		user.addArgument("-u", "--username").help("To pass the username when user specific information is handled");
 
 		try {
 			parsedArgs = parser.parseArgs(args);
@@ -368,25 +375,27 @@ public class Solver {
 		}
 	}
 
-	private static void adduser(String string) throws IOException {
-		List<String> file = Files.readAllLines(Paths.get(string))//
-				.stream() //
-				.map(line -> line.strip()) //
-				.filter(line -> line.matches("\\s")) //
-				.filter(line -> line.startsWith("#"))//
-				.collect(Collectors.toList());//
+	private static void updateCookie(String username, String cookie) throws IOException {
 
-		String username = file.get(0);
-		String cookie = file.get(1);
+		if (!cookie.startsWith("session=")) {
+			cookie = "session=" + cookie;
+		}
 		if (!cookie.matches("session=[a-f0-9]*")) {
 			System.err.println("error: malformed cookie:");
 			System.err.println(cookie);
 			return;
 		}
-		if (DBManager.hasUser(username)) {
-			DBManager.updateUser(username, cookie);
-		} else {
-			DBManager.addUser(username, cookie);
+		try {
+			if (DBManager.hasUser(username)) {
+				DBManager.updateUser(username, cookie);
+				System.out.println("Cookie updated for user " + username);
+			} else {
+				DBManager.addUser(username, cookie);
+				System.out.println("New user added " + username);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
@@ -476,7 +485,6 @@ public class Solver {
 	}
 
 	private void doTools() {
-		System.out.println(parsedArgs);
 		String arg = parsedArgs.getString("generate_year");
 		if (arg != null) {
 			for (int i = 1; i <= 25; i++) {
@@ -491,12 +499,32 @@ public class Solver {
 		}
 	}
 
+	private void doUser() {
+		System.out.println(parsedArgs);
+		String uname = parsedArgs.getString("add");
+		System.out.println(uname);
+		if (uname != null) {
+			String cookie = parsedArgs.getString("cookie");
+			if (cookie != null) {
+				try {
+					updateCookie(uname, cookie);
+				} catch (IOException e) {
+					System.out.println("Failed to add user:");
+					System.out.println(e.getClass());
+					System.out.println(e.getMessage());
+				}
+			}
+		}
+
+	}
+
 	public void run() {
 		String mode = parsedArgs.get("mode");
 		switch (mode) {
 		case SOLVE -> doSolve();
 		case BENCHMARK -> doBenchmark();
 		case TOOLS -> doTools();
+		case USER -> doUser();
 		}
 	}
 

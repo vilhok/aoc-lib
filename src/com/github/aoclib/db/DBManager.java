@@ -89,8 +89,8 @@ public class DBManager {
 		String solutionsql = "INSERT INTO solutions(user,year,day,part,solution) VALUES(?,?,?,?,?)";
 		String wrongsolution = "INSERT INTO wrongsolutions(user,year,day,part,solution) VALUES(?,?,?,?,?)";
 		String sql = correct ? solutionsql : wrongsolution;
-		//TODO: this does not throw error if the value already exists, why?
-		
+		// TODO: this does not throw error if the value already exists, why?
+
 		try (PreparedStatement ps = c.prepareStatement(sql)) {
 			ps.setString(1, user);
 			ps.setInt(2, s.year);
@@ -248,12 +248,31 @@ public class DBManager {
 
 	}
 
-	public static void addUser(String username, String cookie) {
+	public static void addUser(String username, String cookie) throws SQLException {
+		String sql = "INSERT into users(username) VALUES(?)";
+		String sql2 = "INSERT into cookies(username,cookie) VALUES(?,?)";
 
+		// TODO this should be a transaction
+		
+		try (PreparedStatement ps = c.prepareStatement(sql)) {
+			ps.setString(1, username);
+			ps.execute();
+		}
+		try (PreparedStatement ps = c.prepareStatement(sql2)) {
+			ps.setString(1, username);
+			ps.setString(2, cookie);
+			ps.execute();
+		}
 	}
 
-	public static void updateUser(String username, String cookie) {
+	public static void updateUser(String username, String cookie) throws SQLException {
+		String updatesql = "UPDATE cookies SET cookie=? WHERE username=?";
 
+		try (PreparedStatement ps = c.prepareStatement(updatesql)) {
+			ps.setString(1, cookie);
+			ps.setString(2, username);
+			ps.execute();
+		}
 	}
 
 	/**
@@ -262,8 +281,14 @@ public class DBManager {
 	 * @param username
 	 * @return
 	 */
-	public static boolean hasUser(String username) {
-		return false;
+	public static boolean hasUser(String username) throws SQLException {
+		String updatesql = "SELECT * FROM users WHERE username=?";
+		
+		try (PreparedStatement ps = c.prepareStatement(updatesql)) {
+			ps.setString(1, username);
+			ResultSet rs = ps.executeQuery();
+			return rs.next();
+		}
 	}
 
 	public static SolutionData getSolution(int year, int day, String username) throws SQLException {

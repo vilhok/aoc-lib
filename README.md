@@ -3,8 +3,6 @@
 
 A helper library for minimizing the amount of work needed to participate in [https://adventofcode.com](https://adventofcode.com)
 
-** Currently broken, adding users is not possible even when using the proper command. Expect a fix in near future **
-
 ### Features
 
  * Automatic input download
