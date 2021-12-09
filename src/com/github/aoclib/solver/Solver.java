@@ -112,6 +112,9 @@ public class Solver {
 		benchmark.addArgument("-u", "--user").required(true)
 				.help("Local username. Database must have a cookie with this name. For help, run: user -h");
 
+		benchmark.addArgument("-c", "--count").setDefault(1).type(Integer.class).help(
+				"How many times benchmarks should run. There might be distinct results between runs due to JVM warmup.");
+
 		int benchYear;
 		if (now.getMonth() == Month.DECEMBER) {
 			benchYear = now.getYear();
@@ -276,7 +279,7 @@ public class Solver {
 		psd.solution = solution;
 
 		if (knownWrongSolution(username, solution)) {
-			psd.statusMsg = "This solution is known to be wrong.";
+			psd.statusMsg = "This solution (" + solution.solution + ") is known to be wrong.";
 			return psd;
 		}
 		if (knownCorrect != null) {
@@ -428,13 +431,19 @@ public class Solver {
 	private void doBenchmark() {
 		String uname = parsedArgs.getString("user");
 		int year = parsedArgs.getInt("year");
-		if (year == 0) {
-			for (int i = 2015; i < maxYear; i++) {
+		int count = parsedArgs.getInt("count");
+		System.out.println(parsedArgs);
+		for (int c = 0; c < count; c++) {
+			if (year == 0) {
 
-				benchmark(i, uname);
+				for (int i = 2015; i < maxYear; i++) {
+
+					benchmark(i, uname);
+				}
+
+			} else {
+				benchmark(year, uname);
 			}
-		} else {
-			benchmark(year, uname);
 		}
 	}
 
@@ -478,7 +487,7 @@ public class Solver {
 		System.out.println("Year stats:");
 		System.out.println("-".repeat(size));
 		System.out.println("Task algorithm time:" + TimeUtils.getTimeString(totalTime));
-		System.out.println("Bencmark wall time:" + TimeUtils.getTimeString(wallTime));
+		System.out.println("Benchmark wall time:" + TimeUtils.getTimeString(wallTime));
 		System.out.print((unsolved > 0 ? "Unsolved tasks:" + unsolved : "") + "\n");
 		System.out.println("-".repeat(size));
 		System.out.println("*".repeat(size));
