@@ -135,12 +135,13 @@ public abstract class DayX {
 			TestSolution result = new TestSolution(test.apply(ip).toString());
 			if (result.solution.equals(NOT_SOLVED)) {
 				notSolvedCnt++;
+				allPassed = false;
 			} else if (!result.solution.equals(tc.expectedSolution.toString())) {
 				System.out.println("\tTest " + (index + 1) + " failed. Result: " + result.solution + " Expected: "
 						+ tc.expectedSolution);
 				allPassed = false;
 			} else {
-				System.out.println("\tTest " + (index + 1) + " passed.");
+				System.out.println("\tTest " + (index + 1) + " passed. ("+result.solution+")");
 			}
 			index++;
 		}
@@ -151,6 +152,9 @@ public abstract class DayX {
 			return true;
 
 		}
+//		if (notSolvedCnt > 0) {
+//			System.out.println("  At least one test returned NOT_SOLVED");
+//		}
 
 		return allPassed;
 	}
