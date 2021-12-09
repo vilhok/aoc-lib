@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import com.github.aoclib.utils.Delimiter;
 import com.github.aoclib.utils.Instruction;
@@ -105,7 +106,7 @@ public class InputParser {
 				current.add(line);
 			}
 		}
-		//adds the final group if there was no blank line as the last line
+		// adds the final group if there was no blank line as the last line
 		if (list.get(list.size() - 1) != current) {
 			list.add(current);
 		}
@@ -211,6 +212,22 @@ public class InputParser {
 				.collect(Collectors.toList())//
 				.toArray(char[][]::new);
 
+	}
+
+	/**
+	 * Returns a matrix as an integer array. Assume the input consists of strings
+	 * that have only ascii numbers
+	 * 
+	 * 
+	 */
+	public int[][] intMatrix() {
+		int[][] in = new int[input.size()][];
+		int index = 0;
+		for (String line : input) {
+			in[index++] = line.chars().map(i -> i - 48).toArray();
+		}
+
+		return in;
 	}
 
 	/**
