@@ -2,10 +2,11 @@ package com.github.aoclib.api;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import com.github.aoclib.utils.Delimiter;
 import com.github.aoclib.utils.Instruction;
@@ -24,8 +25,8 @@ public class InputParser {
 
 	/**
 	 *
-	 * Returns true if all the input lines have the same length. Lines lengths are
-	 * compared by {@link String#length()}.
+	 * Returns true if all the input lines have the same length. Lines lengths
+	 * are compared by {@link String#length()}.
 	 * 
 	 * @return Are all the input lines equally long
 	 */
@@ -82,8 +83,18 @@ public class InputParser {
 	}
 
 	public <T> List<T> getLines(Function<String, T> mapper) {
-
 		return input.stream().map(mapper).collect(Collectors.toList());
+	}
+
+	private <T> void mapAndCollect(Function<String, T> mapper,
+			Consumer<T> consumer) {
+		input.stream().map(mapper).forEach(consumer::accept);
+	}
+
+	public <T, R extends Collection<T>> R getLines(Function<String, T> mapper,
+			R container) {
+		mapAndCollect(mapper, container::add);
+		return container;
 	}
 
 	/**
@@ -152,8 +163,8 @@ public class InputParser {
 	}
 
 	/**
-	 * Returns a single integer array from single line of input by using a custom
-	 * delimiter
+	 * Returns a single integer array from single line of input by using a
+	 * custom delimiter
 	 * 
 	 * @param rowValueDelimiter
 	 * @return
@@ -162,7 +173,8 @@ public class InputParser {
 		List<String> lines = input;
 		return lines.stream() //
 				.filter(s -> !s.matches("\\s*")) //
-				.flatMap(s -> Arrays.stream(s.split(rowValueDelimiter.delimiter))) //
+				.flatMap(
+					s -> Arrays.stream(s.split(rowValueDelimiter.delimiter))) //
 				.mapToInt(e -> Integer.parseInt(e)) //
 				.toArray();
 	}
@@ -185,19 +197,22 @@ public class InputParser {
 	 * @param valueMapper
 	 * @return
 	 */
-	public <T> List<List<T>> linesAsLists(String sep, Function<String, T> valueMapper) {
+	public <T> List<List<T>> linesAsLists(String sep,
+			Function<String, T> valueMapper) {
 
 		return input //
 				.stream()//
 				.map(line -> line.trim())//
 				.filter(line -> !line.isBlank())//
-				.map(i -> Arrays.stream(i.split(sep))//
-						.map(valueMapper)//
-						.collect(Collectors.toList()))
+				.map(
+					i -> Arrays.stream(i.split(sep))//
+							.map(valueMapper)//
+							.collect(Collectors.toList()))
 				.collect(Collectors.toList());
 	}
 
-	public <T> List<List<T>> linesAsLists(Delimiter sep, Function<String, T> valueMapper) {
+	public <T> List<List<T>> linesAsLists(Delimiter sep,
+			Function<String, T> valueMapper) {
 		return linesAsLists(sep.delimiter, valueMapper);
 	}
 
@@ -215,8 +230,8 @@ public class InputParser {
 	}
 
 	/**
-	 * Returns a matrix as an integer array. Assume the input consists of strings
-	 * that have only ascii numbers
+	 * Returns a matrix as an integer array. Assume the input consists of
+	 * strings that have only ascii numbers
 	 * 
 	 * 
 	 */
@@ -260,7 +275,8 @@ public class InputParser {
 	 * @return
 	 */
 	public List<Instruction> as2017Instruction(Delimiter instructionDelimiter) {
-		return input.stream().map(e -> new Instruction(e, instructionDelimiter)).collect(Collectors.toList());
+		return input.stream().map(e -> new Instruction(e, instructionDelimiter))
+				.collect(Collectors.toList());
 	}
 
 }
