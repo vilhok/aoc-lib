@@ -137,9 +137,9 @@ public Object secondPart(InputParser input){
 }
 ```
 
-It's often good idea to just print your result and return NOT_SOLVED when you are working on the problem. Each returned value that is not considered *invalid* will be submitted to Advent of code, which might get you banned in the long run. The library respects the submission delays imposed by the page, and refuses to submit a same wrong solution twice. After you are sure you want to submit the answer, return the whatever answer you have. Primitives will will be autoboxed and any return value will be automatically converted to string with `toString()`
+It's often good idea to just print your result and return NOT_SOLVED when you are working on the problem. Each returned value that is not considered *invalid*<sup>1</sup> will be submitted to Advent of code, which might get you banned in the long run. The library respects the submission delays imposed by the page, and refuses to submit a same wrong solution twice. After you are sure you want to submit the answer, return the whatever answer you have. Primitives will will be autoboxed and any return value will be automatically converted to string with `toString()`
 
-Some of the aforementioned invalid values include: ` true, false, 0,-1, null, ""`
+<sup>1</sup>Some of the aforementioned invalid values include: ` true, false, 0,-1, null, ""` which are either guaranteed to never be the actual answers or are very unlikely to be.
 
 
 ### Input parser examples
@@ -167,7 +167,7 @@ List<List<Integer>> rows = input.linesAsLists(Delimiter.COMMA, Integer::parseInt
 // Groups of lines are separated by two newlines. 
 List<List<String> groups = input.getGroups();
 
-//the input as a single matrix or characters
+//the input as a single matrix of characters
 char[][] myTable = input.charMatrix();
 ```
 See the `InputParser` documentation for the full list of functions.
@@ -182,7 +182,7 @@ protected void insertTestsPart1(List<Test> tests) { }
 protected void insertTestsPart2(List<Test> tests) { }
 ```
 
-These can be used to insert test cases for each part of the puzzle. These have to be manually extracted from the web page. The solver calls these methods first to get the tests, and then calls your solving function with those values. The actual input will be used as soon as the tests pass. A partial example implementation for 2015 day 1:
+These can be used to insert test cases for each part of the puzzle. These have to be manually extracted from the web page. The solver initially calls these methods to get the test cases. Tests cases - if any exist - are run and only if they all pass the actual input will be passed to your function. A partial example implementation for 2015 day 1:
 
 ```java
 protected void insertTestsPart1(List<Test> tests) {
