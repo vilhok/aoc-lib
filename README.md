@@ -120,7 +120,7 @@ public class MyClass {
 }
 ```
 
-On top of this, this file does not really have to be modified. Everything else is done with command line arguments.
+On top of that, this main class file does not really need to be modified. Everything else is done with command line arguments and all the code should be in the daily solver classes.
 
 Pass `-h` to find all the subcommands, and `subcommand -h` to get a specific help.
 
